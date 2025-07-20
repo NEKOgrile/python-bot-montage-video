@@ -105,17 +105,9 @@ python main.py
 - ✅ **cutting_Long_To_Short_Video** → découpe en parties avec texte “Partie X”  
 
 
-# 🛣️ Roadmap (prochaines étapes)  
-
-💡 Ajouter un mode batch (traiter toutes les vidéos d’un dossier automatiquement)  
-📈 Paramétrage interactif (durée par partie, style du texte, etc.)  
-🎥 Génération automatique de preview (image miniature par partie)  
-🔁 Support multi-format (YouTube Shorts, Insta Reels…)  
-
-
 # 🧑‍💻 Auteur  
 
-Projet développé par **Ton Nom/Pseudo** pour automatiser le **formatage & découpe de vidéos**.  
+Projet développé par **Willem Cornil** pour automatiser le **formatage & découpe de vidéos**.  
 N’hésitez pas à proposer des améliorations ou à contribuer via GitHub !  
 
 
