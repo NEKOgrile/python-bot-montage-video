@@ -7,7 +7,7 @@ Il est pensé pour :
 - ✂️ **Découper automatiquement** une longue vidéo en parties définies  
 - 🖼️ **Ajouter du texte dynamique** (saison, numéro de partie…)  
 
-=
+
 # 📌 Objectif  
 
 Le script fonctionne en **deux étapes** :  
@@ -34,29 +34,21 @@ Le script fonctionne en **deux étapes** :
 ```bash
 ┌── docs/  
 │   └── video/  
-│       ├── Rick.and.Morty.S08E01.FRENCH.WEBRip.x264-Wawacity.pictures.mp4  
-│       ├── Rick.and.Morty.S08E08.FRENCH.WEBRip.x264-Wawacity.motorcycles.mp4  
-│       ├── video_10s.mp4  
-│       ├── video_200s.mp4  
-│       └── video_400s.mp4  
+│       ├── exemple_video_input.mp4  
 │  
 ├── fonction/  
 │   ├── cutting_Long_To_Short_Video.py    # Découpe la vidéo longue en parties  
 │   ├── Make_Long_Video.py                # Crée la vidéo longue format TikTok  
 │   ├── Number_Of_Part.py                 # Calcule le nombre de parties et durées  
-│   └── __pycache__/                      # Cache Python compilé  
 │  
 ├── output/  
 │   ├── video_longue/                     # Contient les versions longues formatées  
-│   │   ├── Rick.and.Morty.S08E08.FRENCH.WEBRip.x264-Wawacity.motorcycles/  
-│   │   ├── video_10s/  
-│   │   ├── video_200s/  
-│   │   └── video_400s/  
+│   │   ├── exemple_video_entiere_output.mp4   
 │   │  
 │   └── video_partie/                     # Contient les parties découpées  
-│       ├── Rick.and.Morty.S08E08.FRENCH.WEBRip.x264-Wawacity.motorcycles/  
-│       ├── video_10s/  
-│       └── video_400s/  
+│       ├── exemple_video_parti1_output.mp4
+│       ├── exemple_video_parti2_output.mp4
+│       ├── exemple_video_parti3_output.mp4
 │  
 ├── .gitignore  
 ├── cut.py                               # Script rapide de découpe  
@@ -71,6 +63,7 @@ Python | 3.10+ | Exécution des scripts
 pip | 23.x+ | Installation des dépendances  
 MoviePy | 1.0.3+ | Manipulation vidéo  
 OpenCV | 4.x | Effet flou sur fond vidéo  
+ImageMagick | 7.1.2-0-Q16 | generation de textes 
 
 💡 **ImageMagick** est requis pour MoviePy afin de générer des textes (`magick` doit être dans le PATH).  
 
@@ -78,7 +71,7 @@ OpenCV | 4.x | Effet flou sur fond vidéo
 # ⚙️ Installation rapide  
 
 1️⃣ **Cloner le projet**  
-git clone https://github.com/ton-profil/video-cutter-formatter.git  
+git clone https://github.com/NEKOgrile/python-bot-montage-video.git  
 cd video-cutter-formatter  
 
 2️⃣ **Créer un environnement virtuel et installer les dépendances**  
