@@ -13,7 +13,7 @@ def flou_frame(frame):
     return cv2.GaussianBlur(frame, (51, 51), 30)
 
 
-def Make_Long_Video(title):
+def Make_Long_Video(title , saison , episode):
     # ✅ Extraire le nom sans extension (ex: "video_10s")
     title_sans_ext = os.path.splitext(title)[0]
 
@@ -40,7 +40,7 @@ def Make_Long_Video(title):
 
     # ✅ Texte
     season_text = TextClip(
-        "Season 8 ep.8",
+        f"Season{saison} ep {episode}",
         fontsize=70,
         color="white",
         font="Arial-Bold",
