@@ -52,9 +52,25 @@ def Make_Long_Video(title , saison , episode):
     # On place le texte centré, un peu plus bas
     season_text = season_text.set_position(("center", 1300))  # 1400 px du haut → un peu au bas de l’écran
 
+    number_of_abonne = "140"
+    Goal = "500"
+    # ✅ Texte
+    abonnees_text = TextClip(
+        f"{number_of_abonne} / {Goal} abonnés",
+        fontsize=50,
+        color="white",
+        font="Arial-Bold",
+        stroke_color="black",
+        stroke_width=3  # contour plus épais
+    ).set_duration(clip.duration)
+
+
+    # On place le texte centré, un peu plus bas
+    abonnees_text = abonnees_text.set_position(("center", 300))  # 1400 px du haut → un peu au bas de l’écran
+
 
     # ✅ Combinaison finale
-    final = CompositeVideoClip([clip_bg, clip_net, season_text], size=(tiktok_width, tiktok_height))
+    final = CompositeVideoClip([clip_bg, clip_net, season_text , abonnees_text], size=(tiktok_width, tiktok_height))
 
     # ✅ Exporter la vidéo finale dans son dossier dédié
     final.write_videofile(output_path, codec="libx264", fps=30)

@@ -1,3 +1,5 @@
-moviepy>=1.0.3
-opencv-python>=4.9.0
-tqdm>=4.66.0
+moviepy==1.0.3
+opencv-python==4.9.0.80
+tqdm==4.66.0
+undetected-chromedriver==3.5.5
+selenium==4.14.0

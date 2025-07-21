@@ -111,3 +111,6 @@ Projet développé par **Willem Cornil** pour automatiser le **formatage & déco
 N’hésitez pas à proposer des améliorations ou à contribuer via GitHub !  
 
 
+
+
+maj : cree un ficher comme celui C:\Users\<votre nom>\Documents\chrome_profiles\tiktok_user pui dl chrome
