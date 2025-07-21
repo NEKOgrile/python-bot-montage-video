@@ -4,6 +4,8 @@ from fonction.Number_Of_Part import Get_Seconds_Video  , Number_Of_Part
 from fonction.Make_Long_Video import Make_Long_Video
 from fonction.cutting_Long_To_Short_Video import cutting_Long_To_Short_Video
 from fonction.Get_Scheldule_Publish import best_posting_times
+from fonction.Upload_Video_Part import open_tiktok
+
 
 title = "Rick.and.Morty.S08E07.FRENCH.WEBRip.x264-Wawacity.zone.mp4"
 title_sans_ext = os.path.splitext(title)[0]
