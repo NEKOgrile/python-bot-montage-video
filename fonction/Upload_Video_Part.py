@@ -65,53 +65,32 @@ def selectionner_date(driver, jour_voulu, mois_voulu):
 
 
 
-def scroll_jusqua_et_selectionne_heure(driver, heure_voulue, scroll_times=30):
+def scroll_jusqua_et_selectionne_heure(driver, heure_voulue=None, scroll_amount=23):
     """
-    Scrolle vers le bas jusqu'à '23', descend encore un peu,
-    puis remonte jusqu'à trouver 'heure_voulue' et clique dessus.
+    Scrolle de manière simple vers le bas 'scroll_amount' fois (par défaut 23 crans),
+    attend 50 secondes, puis fait un break.
     """
+    print(heure_voulue)
     try:
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, '//div[contains(@class,"tiktok-timepicker-option-list")][1]'))
-        )
+        print(f"🔽 Scroll de {scroll_amount} crans vers le bas en cours...")
+        for i in range(scroll_amount):
+            pyautogui.scroll(500)  # Scroll vers le haut
+            time.sleep(0.01)
+            print(f"↘️ Scroll {i + 1}/{scroll_amount}")
 
-        # Phase 1 : descendre jusqu'à "23"
-        for i in range(scroll_times):
-            elements = driver.find_elements(By.XPATH, '//div[contains(@class,"tiktok-timepicker-option-item")]')
-            for el in elements:
-                if el.text.strip() == "23":
-                    print("✅ '23' détecté dans la liste.")
-                    for j in range(4):
-                        pyautogui.scroll(-500)
-                        time.sleep(0.2)
-                        print(f"↘️ Scroll supplémentaire {j+1}/4 après '23'")
-                    break
-            else:
-                pyautogui.scroll(-500)
-                time.sleep(0.2)
-                continue
-            break  # on a trouvé "23", on quitte la boucle
+        scroll_depth = int(heure_voulue)
+        for i in range(scroll_depth):
+            pyautogui.scroll(-500)
+            time.sleep(0.01)
+            print(f"↘️ Scroll {i + 1}/{scroll_depth}")
 
-        # Phase 2 : remonter jusqu'à l'heure voulue
-        for attempt in range(40):  # max 40 scrolls pour éviter boucle infinie
-            elements = driver.find_elements(By.XPATH, '//div[contains(@class,"tiktok-timepicker-option-item")]')
-            for el in elements:
-                if el.text.strip() == str(heure_voulue):
-                    pyautogui.scroll(100)  # petit scroll vers le haut pour l’amener au centre
-                    time.sleep(0.3)
-                    el.location_once_scrolled_into_view
-                    el.click()
-                    print(f"✅ Heure '{heure_voulue}' sélectionnée.")
-                    return True
-            pyautogui.scroll(500)  # scroll vers le haut
-            time.sleep(0.3)
 
-        print(f"❌ Heure '{heure_voulue}' non trouvée après remontée.")
-        return False
-
+        print("🛑 Fin du scroll simulé. (Pas de sélection d'heure)")
+        return True  # Toujours vrai, car plus de recherche d'heure
     except Exception as e:
-        print(f"❌ Erreur générale : {e}")
+        print(f"❌ Erreur pendant le scroll simulé : {e}")
         return False
+
 
 
 
@@ -171,7 +150,7 @@ def Upload_Video_Part(path, best_time_to_upload):
             continue
 
         try:
-            time.sleep(3)
+            time.sleep(0.5)
             champ_description = driver.find_element(By.CLASS_NAME, "public-DraftEditor-content")
             champ_description.click()
             time.sleep(1)
@@ -181,14 +160,15 @@ def Upload_Video_Part(path, best_time_to_upload):
 
             numero_partie = nom_fichier.replace(".mp4", "").replace("part_", "")
             description = f"""part {numero_partie}
-#ricketmorty
-#partie{numero_partie}
-#suite
-#pourtoii
-#serie
-#saison8 @fa17ur3"""
+#sérieaddict #binge #momentfort
+#partie{numero_partie} #épisode{numero_partie}
+#scèneculte #film #serie
+#suspens #intrigue #mustwatch
+#foryou #pourtoi #tiktokserie
+#saison8 #rickandmorty @fa17ur3"""
             champ_description.send_keys(description)
             print("✅ Description insérée.")
+            time.sleep(0.5)
         except Exception as e:
             print(f"❌ Erreur description : {e}")
 
@@ -240,7 +220,7 @@ def Upload_Video_Part(path, best_time_to_upload):
                 print("🔄 Début du scroll vers le haut (12 crans)...")
                 for i in range(12):
                     pyautogui.scroll(100)  # Scroll de 1 cran vers le haut
-                    time.sleep(0.15)       # Pause visible entre chaque scroll (modifiable)
+                    time.sleep(0.01)       # Pause visible entre chaque scroll (modifiable)
                     print(f"↥ Scroll {i+1}/16 effectué.")
                 print("✅ Scroll de 16 crans vers le haut terminé.")
             except Exception as e:
@@ -253,7 +233,7 @@ def Upload_Video_Part(path, best_time_to_upload):
 
                 for i in range(scroll_count):
                     pyautogui.scroll(-100)  # Scroll vers le bas
-                    time.sleep(0.15)
+                    time.sleep(0.01)
                     print(f"↘️ Scroll bas {i+1}/{scroll_count}")
                 print("✅ Scroll minute terminé.")
             except Exception as e:

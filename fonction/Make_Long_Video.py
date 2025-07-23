@@ -44,11 +44,9 @@ def Make_Long_Video(title, saison, episode, number_of_abonne, Goal):
 
 
     # Rogner la vidéo face pour mieux cadrer le visage (plus haut que 50)
-    clip_face = clip_face.crop(y1=20, y2=520)
+    clip_face = clip_face.crop(y1=0, y2=600)
     clip_face = clip_face.resize(width=1080).set_position(("center", 0))
 
-    # Appliquer effet miroir et légère accélération
-    clip = clip.fx(mirror_x)
 
     # Image de fond floutée (1 seule frame traitée)
     # Créer fond flouté dynamique à partir du clip redimensionné
@@ -56,8 +54,7 @@ def Make_Long_Video(title, saison, episode, number_of_abonne, Goal):
 
 
     # Redimensionner sans zoom ni recadrage
-    clip_net = clip.resize(height=1080).set_position(("center", "center"))
-
+    clip_net = clip.resize(width=1100).set_position(("center", "center"))
     # Texte saison/épisode (petit et centré bas)
     season_text = TextClip(
         f"saison {saison} : ep : {episode}",
@@ -93,4 +90,4 @@ def Make_Long_Video(title, saison, episode, number_of_abonne, Goal):
     )
 
     # Export
-    final.write_videofile(output_path, codec="libx264", fps=30, threads=8, preset="ultrafast")
+    final.write_videofile(output_path, codec="libx264", fps=30, threads=8)
