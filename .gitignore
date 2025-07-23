@@ -1,1 +1,8 @@
 *.mp4
+*.mkv
+# Ignorer le dossier venv (environnement virtuel Python)
+venv/
+.venv/
+
+# Ignorer tous les fichiers .mp3 (où qu'ils soient)
+*.mp3

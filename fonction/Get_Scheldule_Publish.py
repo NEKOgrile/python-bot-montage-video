@@ -25,7 +25,6 @@ jours_semaine_str = {
     6: "Dimanche"
 }
 
-
 # Fonction qui liste les fichiers vidéo "part_X.mp4" dans un dossier donné
 def Poste_Video_Part(folder_path):
     files = os.listdir(folder_path)  # Liste tous les fichiers dans le dossier
@@ -51,7 +50,19 @@ def generate_schedule(mid_time_str, num_videos, interval_minutes=30):
         schedule.append(scheduled_time)  # Ajoute à la liste du planning
     return schedule  # Retourne la liste des heures programmées
 
-# Fonction principale qui calcule le meilleur planning de publication selon le jour actuel
+# Fonction utilitaire pour obtenir la date du prochain jour de la semaine ciblé
+def next_weekday_date(reference_date, target_weekday):
+    """
+    Donne la date du prochain jour de la semaine target_weekday (0=lundi...6=dimanche)
+    à partir de reference_date (type date).
+    Si reference_date est déjà target_weekday, retourne reference_date.
+    """
+    days_ahead = target_weekday - reference_date.weekday()
+    if days_ahead < 0:
+        days_ahead += 7
+    return reference_date + timedelta(days=days_ahead)
+
+# Fonction principale qui calcule le meilleur planning de publication selon le jour actuel ou forcé
 def best_posting_times(folder_path, force_day=7):
     """
     Calcule le planning de publication des vidéos avec jour et heure.
@@ -59,19 +70,8 @@ def best_posting_times(folder_path, force_day=7):
     force_day : entier entre 0 et 6 pour forcer un jour (0=lundi, ..., 6=dimanche)
                 7 (par défaut) pour prendre le jour actuel automatiquement.
                 
-    Retourne une liste de tuples : (nom_video, heure_HH:MM, jour_en_clair)
+    Retourne une liste de tuples : (nom_video, heure_HH:MM, jour_en_clair, jour_numero, mois_numero)
     """
-    jours_semaine_str = {
-        0: "Lundi",
-        1: "Mardi",
-        2: "Mercredi",
-        3: "Jeudi",
-        4: "Vendredi",
-        5: "Samedi",
-        6: "Dimanche"
-    }
-
-    # Choix du jour (forcé ou actuel)
     if force_day in range(0, 7):
         jour = force_day
     else:
@@ -79,11 +79,14 @@ def best_posting_times(folder_path, force_day=7):
         jour = now_utc.weekday()
 
     jour_str = jours_semaine_str.get(jour, "Jour inconnu")
+    
+    now_utc = datetime.now(pytz.utc)
+    if force_day in range(0,7):
+        today = next_weekday_date(now_utc.date(), force_day)
+    else:
+        today = now_utc.date()
 
-    # Récupérer la plage horaire du jour choisi
-    start_str, end_str = heure_de_pointe_utc.get(jour, ("12:00", "14:00"))
-
-    # Calculer l'heure médiane (milieu de la plage)
+    start_str, end_str = heure_de_pointe_utc.get(jour, ("10:00", "14:00"))
     start_dt = datetime.strptime(start_str, "%H:%M")
     end_dt = datetime.strptime(end_str, "%H:%M")
     mid_minutes = (start_dt.hour * 60 + start_dt.minute + end_dt.hour * 60 + end_dt.minute) // 2
@@ -97,10 +100,14 @@ def best_posting_times(folder_path, force_day=7):
     # Générer le planning des heures de publication
     schedule = generate_schedule(mid_time_str, num_videos, interval_minutes=30)
 
-    simple_list = []
+    result_list = []
     for video, dt in zip(videos, schedule):
+        # Ajuster la date à celle calculée selon le jour forcé
+        dt = dt.replace(year=today.year, month=today.month, day=today.day)
         heure_str = dt.strftime("%H:%M")
-        print(f"{video} → {heure_str} ({jour_str})")
-        simple_list.append((video, heure_str, jour_str))
+        jour_num = dt.strftime("%d")
+        mois_num = dt.strftime("%m")
+        print(f"{video} → {heure_str} ({jour_str}) {jour_num}/{mois_num}")
+        result_list.append((video, heure_str, jour_str, jour_num, mois_num))
 
-    return simple_list
+    return result_list
