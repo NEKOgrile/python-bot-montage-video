@@ -65,13 +65,13 @@ def Make_Long_Video(title, saison, episode, number_of_abonne, Goal):
         stroke_width=2,
         size=(1080, None),
         method="caption"
-    ).set_duration(clip.duration).set_position(("center", 1600))
+    ).set_duration(clip.duration).set_position(("center", 1300))
 
-    bg = ColorClip(season_text.size, color=(0, 0, 0)).set_opacity(1).set_duration(clip.duration).set_position(("center", 1600))
+    bg = ColorClip(season_text.size, color=(0, 0, 0)).set_opacity(0.6).set_duration(clip.duration).set_position(("center", 1300))
 
     # Texte abonnés (en haut)
     abonnees_text = TextClip(
-        f"{number_of_abonne} / {Goal} abonnés",
+        f"objectif : {number_of_abonne} / {Goal} abonnés",
         fontsize=40,
         color="white",
         font="Arial-Bold",
@@ -79,9 +79,9 @@ def Make_Long_Video(title, saison, episode, number_of_abonne, Goal):
         stroke_width=2,
         size=(1080, None),
         method="caption"
-    ).set_duration(clip.duration).set_position(("center", 300))
+    ).set_duration(clip.duration).set_position(("center", 1450))
 
-    bg2 = ColorClip(abonnees_text.size, color=(0, 0, 0)).set_opacity(1).set_duration(clip.duration).set_position(("center", 300))
+    bg2 = ColorClip(abonnees_text.size, color=(0, 0, 0)).set_opacity(0.3).set_duration(clip.duration).set_position(("center", 1450))
 
     # Composition finale
     final = CompositeVideoClip(

@@ -20,24 +20,14 @@ def cutting_Long_To_Short_Video(title, time_list):
 
         part_clip = clip.subclip(start, end)
 
-        if i == len(time_list):
-            part_text = TextClip(
-                "Final !!",
-                fontsize=60,
-                color="white",
-                font="Arial-Bold",
-                stroke_color="black",
-                stroke_width=3
-            ).set_duration(part_clip.duration).set_position(("center", 590))
-        else:
-            part_text = TextClip(
-                f"Partie {i}",
-                fontsize=60,
-                color="white",
-                font="Arial-Bold",
-                stroke_color="black",
-                stroke_width=3
-            ).set_duration(part_clip.duration).set_position(("center", 590))
+        part_text = TextClip(
+            f"Partie {i}",
+            fontsize=60,
+            color="white",
+            font="Arial-Bold",
+            stroke_color="black",
+            stroke_width=3
+        ).set_duration(part_clip.duration).set_position(("center", 590))
 
         final = CompositeVideoClip([part_clip, part_text])
 
@@ -51,11 +41,5 @@ def cutting_Long_To_Short_Video(title, time_list):
             audio_codec='aac'
         )
 
-        # Fermer explicitement pour éviter le warning
-        part_clip.close()
-        part_text.close()
-        final.close()
-
         start = end
-
     clip.close()
