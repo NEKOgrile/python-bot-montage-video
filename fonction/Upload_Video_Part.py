@@ -117,7 +117,10 @@ def Upload_Video_Part(path, best_time_to_upload):
     options = uc.ChromeOptions()
     options.add_argument(r"--user-data-dir=C:\Users\thebe\Documents\chrome_profiles")
     options.add_argument("--profile-directory=Default")
+    # 👇 Ajoute ceci avec le chemin exact vers ton Chrome
+    options.binary_location = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 
+    
     try:
         driver = uc.Chrome(options=options)
         driver.get("https://www.tiktok.com/tiktokstudio/upload?from=webapp")
