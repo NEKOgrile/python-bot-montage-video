@@ -1,113 +1,61 @@
-import os               # Module pour manipuler les fichiers et dossiers
-import re               # Module pour les expressions régulières (regex)
-from datetime import datetime, timedelta  # Gestion des dates et durées
-import pytz             # Gestion des fuseaux horaires
-import math             # Fonctions mathématiques (ex: ceil)
+import os
+import re
+from datetime import datetime, timedelta
+import pytz
 
-# Dictionnaire des plages horaires en UTC par jour de la semaine (0 = lundi, ..., 6 = dimanche)
-heure_de_pointe_utc = {
-    0: ("12:00", "14:00"),  # Lundi
-    1: ("15:00", "17:00"),  # Mardi
-    2: ("11:00", "13:00"),  # Mercredi
-    3: ("16:00", "18:00"),  # Jeudi
-    4: ("10:00", "12:00"),  # Vendredi
-    5: ("14:00", "16:00"),  # Samedi
-    6: ("13:00", "15:00"),  # Dimanche
-}
+# Créneaux horaires fixes en heure locale Europe/Paris
+SLOTS = ["10:00", "11:00", "12:00", "14:00", "15:00", "17:00", "18:00", "20:00", "21:00"]  # ex.
 
-jours_semaine_str = {
-    0: "Lundi",
-    1: "Mardi",
-    2: "Mercredi",
-    3: "Jeudi",
-    4: "Vendredi",
-    5: "Samedi",
-    6: "Dimanche"
-}
+JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 
-# Fonction qui liste les fichiers vidéo "part_X.mp4" dans un dossier donné
 def Poste_Video_Part(folder_path):
-    files = os.listdir(folder_path)  # Liste tous les fichiers dans le dossier
-    # Filtre les fichiers correspondant au pattern "part_X.mp4" où X est un nombre
-    part_files = [f for f in files if re.match(r"part_\d+\.mp4", f)]
-    # Trie la liste des fichiers par numéro (ex: part_1 avant part_2)
-    sorted_parts = sorted(part_files, key=lambda f: int(re.search(r"part_(\d+)", f).group(1)))
-    return sorted_parts  # Retourne la liste triée
+    files = os.listdir(folder_path)
+    parts = [f for f in files if re.match(r"part_\d+\.mp4", f)]
+    return sorted(parts, key=lambda f: int(re.search(r"part_(\d+)", f).group(1)))
 
-# Fonction qui génère un planning de publication basé sur une heure médiane
-def generate_schedule(mid_time_str, num_videos, interval_minutes=30):
-    mid_time = datetime.strptime(mid_time_str, "%H:%M").time()  # Convertit "HH:MM" en objet time
-    today = datetime.now(pytz.utc).date()  # Date actuelle UTC (sans heure)
-    # Combine la date d'aujourd'hui avec l'heure médiane, et fixe le fuseau UTC
-    mid_datetime = datetime.combine(today, mid_time).replace(tzinfo=pytz.utc)
-
-    middle_index = math.ceil(num_videos / 2)  # Indice vidéo médiane (ex: 6 si 11 vidéos)
-
-    schedule = []
-    for i in range(1, num_videos + 1):
-        diff = (middle_index - i) * interval_minutes  # Décalage en minutes par rapport au milieu
-        scheduled_time = mid_datetime - timedelta(minutes=diff)  # Calcule l'heure de publication
-        schedule.append(scheduled_time)  # Ajoute à la liste du planning
-    return schedule  # Retourne la liste des heures programmées
-
-# Fonction utilitaire pour obtenir la date du prochain jour de la semaine ciblé
-def next_weekday_date(reference_date, target_weekday):
-    """
-    Donne la date du prochain jour de la semaine target_weekday (0=lundi...6=dimanche)
-    à partir de reference_date (type date).
-    Si reference_date est déjà target_weekday, retourne reference_date.
-    """
-    days_ahead = target_weekday - reference_date.weekday()
-    if days_ahead < 0:
-        days_ahead += 7
-    return reference_date + timedelta(days=days_ahead)
-
-# Fonction principale qui calcule le meilleur planning de publication selon le jour actuel ou forcé
-def best_posting_times(folder_path, force_day=7):
-    """
-    Calcule le planning de publication des vidéos avec jour et heure.
-    
-    force_day : entier entre 0 et 6 pour forcer un jour (0=lundi, ..., 6=dimanche)
-                7 (par défaut) pour prendre le jour actuel automatiquement.
-                
-    Retourne une liste de tuples : (nom_video, heure_HH:MM, jour_en_clair, jour_numero, mois_numero)
-    """
-    if force_day in range(0, 7):
-        jour = force_day
-    else:
-        now_utc = datetime.now(pytz.utc)
-        jour = now_utc.weekday()
-
-    jour_str = jours_semaine_str.get(jour, "Jour inconnu")
-    
-    now_utc = datetime.now(pytz.utc)
-    if force_day in range(0,7):
-        today = next_weekday_date(now_utc.date(), force_day)
-    else:
-        today = now_utc.date()
-
-    start_str, end_str = heure_de_pointe_utc.get(jour, ("10:00", "14:00"))
-    start_dt = datetime.strptime(start_str, "%H:%M")
-    end_dt = datetime.strptime(end_str, "%H:%M")
-    mid_minutes = (start_dt.hour * 60 + start_dt.minute + end_dt.hour * 60 + end_dt.minute) // 2
-    mid_hour = mid_minutes // 60
-    mid_minute = mid_minutes % 60
-    mid_time_str = f"{mid_hour:02d}:{mid_minute:02d}"
-
+def best_posting_times(folder_path, force_day=None):
     videos = Poste_Video_Part(folder_path)
-    num_videos = len(videos)
+    n = len(videos)
+    if n == 0:
+        return []
 
-    # Générer le planning des heures de publication
-    schedule = generate_schedule(mid_time_str, num_videos, interval_minutes=30)
+    tz = pytz.timezone("Europe/Paris")
+    today = datetime.now(tz).date()
 
-    result_list = []
-    for video, dt in zip(videos, schedule):
-        # Ajuster la date à celle calculée selon le jour forcé
-        dt = dt.replace(year=today.year, month=today.month, day=today.day)
-        heure_str = dt.strftime("%H:%M")
-        jour_num = dt.strftime("%d")
-        mois_num = dt.strftime("%m")
-        print(f"{video} → {heure_str} ({jour_str}) {jour_num}/{mois_num}")
-        result_list.append((video, heure_str, jour_str, jour_num, mois_num))
+    if isinstance(force_day, int) and 0 <= force_day < 7:
+        offset = (force_day - today.weekday()) % 7
+        start_date = today + timedelta(days=offset)
+    else:
+        start_date = today
 
-    return result_list
+    result = []
+    max_per_day = len(SLOTS)
+    # on veut max 2 jours
+    total_days = min(2, (n + max_per_day - 1) // max_per_day)
+
+    idx = 0
+    for day_index in range(total_days):
+        slots_to_use = min(max_per_day, n - idx)
+        for slot_index in range(slots_to_use):
+            vid = videos[idx]
+            pub_date = start_date + timedelta(days=day_index)
+            time_str = SLOTS[slot_index]
+            hour, minute = map(int, time_str.split(':'))
+            pub_dt = datetime(pub_date.year, pub_date.month, pub_date.day,
+                              hour, minute, tzinfo=tz)
+
+            result.append((
+                vid,
+                pub_dt.strftime("%H:%M"),
+                JOURS[pub_dt.weekday()],
+                pub_dt.strftime("%d"),
+                pub_dt.strftime("%m")
+            ))
+            print(f"{vid} → {time_str} le {JOURS[pub_dt.weekday()]} {pub_dt.strftime('%d')}/{pub_dt.strftime('%m')}")
+            idx += 1
+            if idx >= n:
+                break
+        if idx >= n:
+            break
+
+    return result
